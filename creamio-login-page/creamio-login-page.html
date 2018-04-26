@@ -1,0 +1,86 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../iron-icons/social-icons.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="creamio-login-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      iron-form {
+        width: 90%;
+        margin: auto;
+      }
+      paper-button {
+        margin-top: 15px;
+      }
+      paper-button.indigo {
+        color: var(--paper-indigo-a200);
+        --paper-button-ink-color: var(--paper-indigo-a200);
+      }
+      paper-button.indigo:hover {
+        background-color: var(--paper-indigo-100);
+      }
+      iron-icon.input-prefix {
+        color: var(--paper-grey-500);
+      }
+    </style>
+
+    <iron-form id="loginForm">
+      <h2>[[formTitle]]</h2>
+      <form method="POST" action="[[loginUrl]]" enctype="application/json">
+          <paper-input value="{{username}}" always-float-label label="Nom d'utilisateur" name="username">
+            <iron-icon class="input-prefix" icon="social:person" slot="prefix"></iron-icon>
+          </paper-input>
+          <paper-input value="{{password}}" type="password" always-float-label label="Mot de passe" name="password">
+            <iron-icon class="input-prefix" icon="icons:lock" slot="prefix"></iron-icon>
+          </paper-input>
+      
+          <paper-button on-tap="_sendData" raised class="indigo">Connexion</paper-button>
+      </form>
+    </iron-form>
+  </template>
+
+  <script>
+    class CreamIOLoginPage extends Polymer.Element {
+      static get is() { return 'creamio-login-page'; }
+      static get properties() {
+        return {
+          loginUrl: {
+            type: String,
+            value: 'http://127.0.0.1:8000/admin/api/login'
+          },
+          formTitle: {
+            type: String,
+            value: 'Connexion'
+          },
+          username: String,
+          password: String
+        };
+      }
+
+      _sendData() {
+        var formData = JSON.stringify(this.$.loginForm.serializeForm());
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.loginUrl);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            alert('User\'s name is ' + xhr.responseText);
+          } else {
+            alert('Request failed.  Returned status of ' + xhr.status);
+          }
+        };
+        xhr.send(formData);
+      }
+    }
+
+    window.customElements.define(CreamIOLoginPage.is, CreamIOLoginPage);
+  </script>
+</dom-module>
